@@ -1,6 +1,7 @@
 import React from 'react';
 import { useEffect, useState } from 'react'
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 
@@ -10,8 +11,10 @@ const api = axios.create({
 })
 
 
-function Login() {
+function App() {
   const [usertag, setUsertag] = useState("");
+  const navigate = useNavigate() ;
+
 
   const addUser = () => {
 
@@ -23,6 +26,9 @@ function Login() {
       } else if (response.status === 201) {
         alert("ユーザを新規作成しました。");
       }
+    })
+    .then(() => {
+      navigate(`/timeline/?name=${usertag}`)
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -42,4 +48,4 @@ function Login() {
   )
 }
 
-export default Login;
+export default App;

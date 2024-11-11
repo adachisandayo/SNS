@@ -2,6 +2,7 @@ import React from 'react';
 import { useEffect, useState } from 'react'
 import axios from "axios";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const api = axios.create({
   baseURL: "http://localhost:8000",
@@ -9,8 +10,15 @@ const api = axios.create({
 })
 
 
-function Timeline() {
+function App() {
   const [posts, setPosts] = useState([]);
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const user_tag = searchParams.get("name");
+  if (!user_tag) {
+    navigate("/login");
+  }
 
   useEffect(() => {
     fetchPosts();
@@ -18,7 +26,7 @@ function Timeline() {
 
   const fetchPosts = async () => {
     try {
-      const response = await api.get("/api/posts/123");
+      const response = await api.get(`/api/timeline/${user_tag}`);
       setPosts(response.data);
     } catch (error) {
       console.error("Error fetching posts:", error);
@@ -41,4 +49,4 @@ function Timeline() {
   )
 }
 
-export default Timeline;
+export default App;

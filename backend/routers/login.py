@@ -12,7 +12,7 @@ def login(usertag: str):
     cur = conn.cursor(dictionary=True)  # 取得結果を辞書型で扱う設定
 
     try:
-        cur.execute("SELECT id FROM users WHERE user_tag=%s", (usertag,))  
+        cur.execute("SELECT id FROM users WHERE user_tag=%s", (usertag, ))  
         result = cur.fetchall()  
 
         if not result:
