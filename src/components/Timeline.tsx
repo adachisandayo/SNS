@@ -1,5 +1,5 @@
 import React from 'react';
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
 import axios from "axios";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -17,7 +17,15 @@ function App() {
 
   const user_tag = searchParams.get("name");
   if (!user_tag) {
-    navigate("/login");
+    navigate("/");
+  }
+
+  const handleNavigateToPost = () => {
+    navigate(`/post/?name=${user_tag}`)
+  }
+
+  const handleNavigateToUser = (userid) => {
+    navigate(`/users/?name=${user_tag}&user=${userid}`)
   }
 
   useEffect(() => {
@@ -39,12 +47,15 @@ function App() {
       {posts.map((item) => (
         <div key={item.id}>
           <p>ID: {item.id}</p>
-          <p>{item.user_tag}</p>
+          <a href="" onClick={() => handleNavigateToUser(item.user_tag)}>{item.user_tag}</a>
           <p>Message: {item.message}</p>
           <p>{item.post_datetime}</p>
         </div>
       ))}
     
+    <button onClick={handleNavigateToPost}>投稿</button>
+    <button onClick={() => handleNavigateToUser(user_tag)}>マイページ</button>
+
     </div>
   )
 }

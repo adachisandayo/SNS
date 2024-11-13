@@ -23,6 +23,14 @@ function App() {
     navigate("/login");
   }
 
+  const handleNavigateToPost = () => {
+    navigate(`/post/?name=${user_tag}`)
+  }
+
+  const handleNavigateToTimeline = () => {
+    navigate(`/timeline/?name=${user_tag}`)
+  }
+
   useEffect(() => {
   },[])
 
@@ -37,7 +45,7 @@ function App() {
         console.log("Post successful:", response);
         if (response.status === 200) {
           alert('投稿しました。');
-
+          handleNavigateToTimeline();
         } 
       })
       .catch((error) => {
@@ -47,6 +55,7 @@ function App() {
   };
 
 
+      <button onClick={handleNavigateToTimeline}>タイムライン</button>
 
 
   return (
@@ -56,8 +65,11 @@ function App() {
         value={newPost}
         onChange={(e) => setnewPost(e.target.value)}
       />
-      <button onClick={handlePost}>Add Item</button>
+      <button onClick={handlePost}>投稿</button>
+      <button onClick={handleNavigateToTimeline}>タイムライン</button>
+
     </div>
+    
   )
 }
 
