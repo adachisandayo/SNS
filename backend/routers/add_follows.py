@@ -33,6 +33,33 @@ def add_follows(src_tag, dst_tag):
         cur.close()
         conn.close()
 
+
+@router.delete("/api/follows/{src_tag}/{dst_tag}")
+def delete_follows(src_tag, dst_tag):
+    conn = connect_db()
+    cur = conn.cursor(dictionary=True)  # 取得結果を辞書型で扱う設定
+
+    src_id = get_user_id(src_tag, cur)
+    dst_id = get_user_id(dst_tag, cur)
+
+    print(src_id, dst_id)
+    try:
+        if following(src_id, dst_id, cur):
+            cur.execute("delete from follows where src_id=%s and dst_id=%s", (src_id, dst_id))
+            conn.commit()
+            response = {
+                "status": "success",
+            }
+            return JSONResponse(content=response, status_code=200)
+        else:
+            response = {
+                "status": "failture",
+            }
+            return JSONResponse(content=response, status_code=202)
+    finally:
+        cur.close()
+        conn.close()
+
 def get_user_id(usertag, cur):
     cur.execute("SELECT id FROM users WHERE user_tag=%s", (usertag, ))  
     result = cur.fetchone()  

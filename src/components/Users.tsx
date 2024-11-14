@@ -12,37 +12,51 @@ const api = axios.create({
 
 function App() {
   const [posts, setPosts] = useState([]);
+  const [following, setFollowing]= useState("");
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const usertag = searchParams.get("name");
-  const dst_usertag = searchParams.get("user");
-  if (!usertag || !dst_usertag) {
+  const src_tag = searchParams.get("name");
+  const dst_tag = searchParams.get("user");
+  if (!src_tag || !dst_tag) {
     navigate("/");
   }
 
   const handleNavigateToPost = () => {
-    navigate(`/post/?name=${usertag}`);
+    navigate(`/post/?name=${src_tag}`);
   }
 
   const handleNavigateToTimeline = () => {
-    navigate(`/timeline/?name=${usertag}`);
+    navigate(`/timeline/?name=${src_tag}`);
   }
 
   // ユーザをフォローするときに呼び出す関数
   const handleFollow = () => {
-    console.log("フォローしました！");
-    api.post(`/api/follows/${usertag}/${dst_usertag}`)
-    .then((response) => {
-      console.log("Post successful:", response);
-      if (response.status === 200) {
-        alert('フォローしました。');
-      } 
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-      alert("フォローに失敗しました。もう一度お試しください。");
-    });
+    if (following == "フォロー") {
+      api.post(`/api/follows/${src_tag}/${dst_tag}`)
+      .then((response) => {
+        console.log("Post successful:", response);
+        if (response.status === 200) {
+          setFollowing("フォロー中")
+        } 
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        alert("フォローに失敗しました。もう一度お試しください。");
+      });
+    } else if (following == "フォロー中") {
+      api.delete(`/api/follows/${src_tag}/${dst_tag}`)
+      .then((response) => {
+        console.log("Post successful:", response);
+        if (response.status === 200) {
+          setFollowing("フォロー")
+        } 
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        alert("フォロー解除に失敗しました。もう一度お試しください。");
+      });
+    }
   };  
 
   useEffect(() => {
@@ -51,8 +65,14 @@ function App() {
 
   const fetchPosts = async () => {
     try {
-      const response = await api.get(`/api/posts/${dst_usertag}`);
-      setPosts(response.data);
+      const response = await api.get(`/api/posts/${src_tag}/${dst_tag}`);
+      const {posts, follow} = response.data
+      setPosts(posts);
+      if (follow) {
+        setFollowing("フォロー中")
+      } else {
+        setFollowing("フォロー")
+      }
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
@@ -61,13 +81,13 @@ function App() {
 
   return (
     <div>
-      {usertag !== dst_usertag && (
-        <button onClick={handleFollow}>フォロー</button>
+      {src_tag !== dst_tag && (
+        <button onClick={handleFollow}>{following}</button>
       )}
       {posts.map((item) => (
         <div key={item.id}>
           <p>ID: {item.id}</p>
-          <p>{item.usertag}</p>
+          <p>{item.src_tag}</p>
           <p>Message: {item.message}</p>
           <p>{item.post_datetime}</p>
         </div>

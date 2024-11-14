@@ -4,13 +4,14 @@ import config
 
 router = APIRouter()
 
-@router.get("/api/posts/{usertag}")
-def get_items(usertag):
+@router.get("/api/posts/{src_tag}/{dst_tag}")
+def get_items(src_tag, dst_tag):
     conn = connect_db()
     cur = conn.cursor(dictionary=True)  # 取得結果を辞書型で扱う設定
 
-
-    userid = get_user_id(usertag, cur) 
+    src_id = get_user_id(src_tag, cur)
+    dst_id = get_user_id(dst_tag, cur) 
+    isFollow = following(src_id, dst_id, cur)
 
     query_for_fetching = (
         "SELECT p.* "
@@ -20,7 +21,7 @@ def get_items(usertag):
     )
 
     # SQL実行時にパラメータを渡す
-    cur.execute(query_for_fetching, (userid, ))
+    cur.execute(query_for_fetching, (dst_id, ))
     results = cur.fetchall()
     
     return_dict = []
@@ -30,10 +31,13 @@ def get_items(usertag):
             "message":row["message"],
             "user_id":row["user_id"],
             "post_datetime":row["post_datetime"],
-            "uer_tag":usertag
+            "uer_tag":dst_tag
         })
     # print(return_dict)
-    return return_dict
+    return {
+        "posts": return_dict, 
+        "follow": isFollow
+    }
 
 
 def get_user_id(usertag, cur):
@@ -45,6 +49,19 @@ def get_user_id(usertag, cur):
         return None
     else:
         return result["id"]
+
+
+def following(src_id, dst_id, cur):
+    if src_id == dst_id:
+        return False
+
+    cur.execute("select * from follows where src_id = %s and dst_id = %s", (src_id, dst_id))
+    result = cur.fetchone()  
+
+    if not result:
+        return False
+    else:
+        return True
 
 
 def connect_db():
