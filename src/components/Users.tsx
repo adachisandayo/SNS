@@ -29,9 +29,20 @@ function App() {
     navigate(`/timeline/?name=${usertag}`);
   }
 
+  // ユーザをフォローするときに呼び出す関数
   const handleFollow = () => {
     console.log("フォローしました！");
-    // フォロー処理のAPI呼び出しなどをここに実装
+    api.post(`/api/follows/${usertag}/${dst_usertag}`)
+    .then((response) => {
+      console.log("Post successful:", response);
+      if (response.status === 200) {
+        alert('フォローしました。');
+      } 
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      alert("フォローに失敗しました。もう一度お試しください。");
+    });
   };  
 
   useEffect(() => {

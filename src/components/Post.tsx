@@ -23,10 +23,6 @@ function App() {
     navigate("/login");
   }
 
-  const handleNavigateToPost = () => {
-    navigate(`/post/?name=${user_tag}`)
-  }
-
   const handleNavigateToTimeline = () => {
     navigate(`/timeline/?name=${user_tag}`)
   }

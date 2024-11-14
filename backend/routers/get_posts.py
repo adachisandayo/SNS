@@ -21,15 +21,8 @@ def get_items(usertag):
 
     # SQL実行時にパラメータを渡す
     cur.execute(query_for_fetching, (userid, ))
-
-    # カラム名の確認
-    column_names = [desc[0] for desc in cur.description]
-    print("取得されるカラム名:", column_names)
-
     results = cur.fetchall()
-    for row in results:
-        print(f"PostID: {row['id']}, Message: {row['message']},Userid: {row["user_id"]} , PostDateTime: {row['post_datetime']}"), 
-
+    
     return_dict = []
     for row in results:
         return_dict.append({

@@ -4,6 +4,7 @@ from routers import get_posts
 from routers import get_timeline
 from routers import login
 from routers import add_posts
+from routers import add_follows
 
 
 app = FastAPI()
@@ -11,6 +12,7 @@ app.include_router(get_posts.router)
 app.include_router(get_timeline.router)
 app.include_router(login.router)
 app.include_router(add_posts.router)
+app.include_router(add_follows.router)
 
 
 # CORS設定

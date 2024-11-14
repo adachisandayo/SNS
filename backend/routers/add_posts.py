@@ -15,7 +15,7 @@ class RequestBody(BaseModel):
 @router.post("/api/posts/{usertag}")
 def add_posts(body: RequestBody, usertag):
     message = body.message
-    print(message)
+    # print(message)
 
     conn = connect_db()
     cur = conn.cursor(dictionary=True)  # 取得結果を辞書型で扱う設定
