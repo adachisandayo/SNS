@@ -1,8 +1,19 @@
 import { useEffect, useState, useCallback } from 'react';
+import {
+  Button,
+  Box,
+  Typography,
+  Dialog,
+  DialogContent,
+  CircularProgress,
+} from "@mui/material";
 import axios from "axios";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Post, User } from "../types/index";
+import TimelineElement from "./TimelineElement"; // コンポーネントのインポート
+
+
 
 const api = axios.create({
   baseURL: "http://localhost:8000",
@@ -75,9 +86,13 @@ function App() {
     fetchPosts();
   }, []);
 
+  //リアクションがクリックされたときの処理
+  const handleLike = () => {
+    console.log("いいね！");
+  };
 
   return (
-    <div>
+    <>
       <input
         type="text"
         value={searchTerm}
@@ -88,23 +103,32 @@ function App() {
 
       {filteredUsers.map((user) => (
         <div key={user.id}>
-          <a href="" onClick={() => handleNavigateToUser(user.user_tag)}>{user.user_tag}</a>
+          <div onClick={() => handleNavigateToUser(user.user_tag)}>{user.user_tag}</div>
         </div>
       ))}
 
-
+{/* 
       {posts.map((item) => (
         <div key={item.id}>
           <p>ID: {item.id}</p>
           <a href="" onClick={() => handleNavigateToUser(item.user_tag)}>{item.user_tag}</a>
           <p>Message: {item.message}</p>
           <p>{item.post_datetime}</p>
+          <button onClick={handleLike}>いいね</button>
         </div>
+      ))} */}
+
+      {posts.map((post) => (
+        <TimelineElement
+          key={post.id}
+          post={post}
+          onLike={handleLike}
+        />
       ))}
 
       <button onClick={handleNavigateToPost}>投稿</button>
       <button onClick={() => handleNavigateToUser(user_tag)}>マイページ</button>
-    </div>
+    </>
 
   );
 }

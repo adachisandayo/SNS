@@ -1,15 +1,44 @@
 import { useEffect, useState } from 'react'
 import axios from "axios";
-import { styled } from '@mui/system';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-
+import {
+  Box,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  TextField,
+  Button,
+  Typography,
+  Stack,
+  Divider,
+} from "@mui/material";
+import { styled } from '@mui/system';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // 戻るアイコンのインポート
+import SendIcon from '@mui/icons-material/Send'; // 投稿アイコンのインポート
 
 
 const api = axios.create({
   baseURL: "http://localhost:8000",
-  timeout: 1000
-})
+  timeout: 1000,
+});
+
+const StyledTextField = styled(TextField)(({ theme }) => ({
+  width: '100%',
+  marginBottom: theme.spacing(2),
+}));
+
+const StyledButton = styled(Button)(({ theme }) => ({
+  borderRadius: '50px', // ボタンの角を丸くする
+  padding: '10px 20px', // パディングを設定
+  fontSize: '16px', // フォントサイズを調整
+  textTransform: 'none', // ボタンのテキストを小文字のままにする
+  transition: 'all 0.3s ease', // ホバー時のアニメーション効果
+  '&:hover': {
+    transform: 'scale(1.05)', // ホバー時にボタンを拡大する
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)', // ホバー時の影
+  },
+}));
 
 
 function App() {
@@ -55,13 +84,66 @@ function App() {
 
   return (
     <div>
-      <input
+      {/* <input
         type="text"
         value={newPost}
         onChange={(e) => setnewPost(e.target.value)}
+      /> */}
+
+      <StyledTextField
+        multiline
+        rows={6}
+        variant="outlined"
+        placeholder="いまどうしてる？"
+        value={newPost}
+        onChange={(e) => setnewPost(e.target.value)}
+        sx={{ width: '100%' }}
       />
-      <button onClick={handlePost}>投稿</button>
-      <button onClick={handleNavigateToTimeline}>タイムライン</button>
+
+      <Box  
+        sx={{
+          padding: { xs: 2, sm: 5 },
+          maxWidth: '450px',
+          width: '100%',
+          height: 'auto',
+          boxShadow: '0px 0px 15px rgba(255, 255, 255, 0.4)',
+          backgroundColor: 'rgba(255, 255, 255, 1)',
+          backdropFilter: 'blur(10px)',
+          borderRadius: '20px',
+          overflow: 'auto',
+        }}>
+        <button onClick={handlePost}>投稿</button>
+
+        <button onClick={handleNavigateToTimeline}>タイムライン</button>
+      </Box>
+
+      
+      <StyledButton
+        variant="contained"
+        endIcon={<SendIcon />} // 投稿ボタンにアイコンを追加
+        sx={{
+          background: 'linear-gradient(45deg, #fe6b8b 30%, #ff8e53 90%)',
+          color: 'white',
+          outline: 'none', // フォーカス時の黒い枠を防ぐ
+          boxShadow: 'none', // フォーカス時の影を消す
+          '&:focus': {
+            outline: 'none', // フォーカス時も黒い枠を防ぐ
+            boxShadow: 'none', // フォーカス時の影を消す
+            transform: 'none', // フォーカス時の拡大を防ぐ
+          },
+          '&:hover': {
+            transform: 'none', // ホバー時の拡大を防ぐ
+          },
+          '&:disabled': {
+            background: 'linear-gradient(45deg, #fe6b8b 30%, #ff8e53 90%)', // 無効時の背景色をグラデーションのまま薄くする
+            color: 'rgba(255, 255, 255, 0.5)', // 無効時のテキスト色を薄くする
+            opacity: 0.6, // 全体の透明度を設定
+          },
+        }}
+      >
+        投稿
+      </StyledButton>      
+
 
     </div>
     
