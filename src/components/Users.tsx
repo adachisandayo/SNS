@@ -1,8 +1,9 @@
-import React from 'react';
 import { useEffect, useState } from 'react';
 import axios from "axios";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Post, User } from "../types/index";
+
 
 const api = axios.create({
   baseURL: "http://localhost:8000",
@@ -11,7 +12,7 @@ const api = axios.create({
 
 
 function App() {
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [following, setFollowing]= useState("");
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -87,7 +88,7 @@ function App() {
       {posts.map((item) => (
         <div key={item.id}>
           <p>ID: {item.id}</p>
-          <p>{item.src_tag}</p>
+          <p>{dst_tag}</p>
           <p>Message: {item.message}</p>
           <p>{item.post_datetime}</p>
         </div>

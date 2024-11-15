@@ -42,7 +42,6 @@ def delete_follows(src_tag, dst_tag):
     src_id = get_user_id(src_tag, cur)
     dst_id = get_user_id(dst_tag, cur)
 
-    print(src_id, dst_id)
     try:
         if following(src_id, dst_id, cur):
             cur.execute("delete from follows where src_id=%s and dst_id=%s", (src_id, dst_id))
@@ -59,6 +58,7 @@ def delete_follows(src_tag, dst_tag):
     finally:
         cur.close()
         conn.close()
+
 
 def get_user_id(usertag, cur):
     cur.execute("SELECT id FROM users WHERE user_tag=%s", (usertag, ))  
