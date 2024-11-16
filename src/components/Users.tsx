@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react';
 import axios from "axios";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Post, User } from "../types/index";
+import { Posts, User } from "../types/index";
+import TimelineElement from "./TimelineElement"; // コンポーネントのインポート
+
 
 
 const api = axios.create({
@@ -12,7 +14,7 @@ const api = axios.create({
 
 
 function App() {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<Posts[]>([]);
   const [following, setFollowing]= useState("");
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -85,13 +87,20 @@ function App() {
       {src_tag !== dst_tag && (
         <button onClick={handleFollow}>{following}</button>
       )}
-      {posts.map((item) => (
+      {/* {posts.map((item) => (
         <div key={item.id}>
           <p>ID: {item.id}</p>
           <p>{dst_tag}</p>
           <p>Message: {item.message}</p>
           <p>{item.post_datetime}</p>
         </div>
+      ))} */}
+      {posts.map((post) => (
+        <TimelineElement
+          key={post.id}
+          post={post}
+          // onLike={handleLike}
+        />
       ))}
       <button onClick={handleNavigateToPost}>投稿</button>
       <button onClick={handleNavigateToTimeline}>タイムライン</button>

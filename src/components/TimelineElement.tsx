@@ -69,6 +69,9 @@ const TimelineElement: React.FC<TimelineElementProps> = ({
     >
       {/* タイトルと投稿日を同じ行に配置 */}
       <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Typography variant="h6">
+          {post.user_tag} <span style={{ fontSize: '0.75em' }}></span>
+        </Typography>
         <Box display="flex" alignItems="center">
           <Typography variant="body2" mr={1} color="text.secondary">
             {formatDateTime(post.post_datetime)}

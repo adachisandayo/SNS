@@ -84,65 +84,94 @@ function App() {
 
   return (
     <div>
-      {/* <input
-        type="text"
-        value={newPost}
-        onChange={(e) => setnewPost(e.target.value)}
-      /> */}
-
-      <StyledTextField
-        multiline
-        rows={6}
-        variant="outlined"
-        placeholder="いまどうしてる？"
-        value={newPost}
-        onChange={(e) => setnewPost(e.target.value)}
-        sx={{ width: '100%' }}
-      />
-
-      <Box  
+      <Box
         sx={{
-          padding: { xs: 2, sm: 5 },
-          maxWidth: '450px',
-          width: '100%',
-          height: 'auto',
-          boxShadow: '0px 0px 15px rgba(255, 255, 255, 0.4)',
-          backgroundColor: 'rgba(255, 255, 255, 1)',
-          backdropFilter: 'blur(10px)',
-          borderRadius: '20px',
-          overflow: 'auto',
-        }}>
-        <button onClick={handlePost}>投稿</button>
-
-        <button onClick={handleNavigateToTimeline}>タイムライン</button>
-      </Box>
-
-      
-      <StyledButton
-        variant="contained"
-        endIcon={<SendIcon />} // 投稿ボタンにアイコンを追加
-        sx={{
-          background: 'linear-gradient(45deg, #fe6b8b 30%, #ff8e53 90%)',
-          color: 'white',
-          outline: 'none', // フォーカス時の黒い枠を防ぐ
-          boxShadow: 'none', // フォーカス時の影を消す
-          '&:focus': {
-            outline: 'none', // フォーカス時も黒い枠を防ぐ
-            boxShadow: 'none', // フォーカス時の影を消す
-            transform: 'none', // フォーカス時の拡大を防ぐ
-          },
-          '&:hover': {
-            transform: 'none', // ホバー時の拡大を防ぐ
-          },
-          '&:disabled': {
-            background: 'linear-gradient(45deg, #fe6b8b 30%, #ff8e53 90%)', // 無効時の背景色をグラデーションのまま薄くする
-            color: 'rgba(255, 255, 255, 0.5)', // 無効時のテキスト色を薄くする
-            opacity: 0.6, // 全体の透明度を設定
-          },
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
         }}
       >
-        投稿
-      </StyledButton>      
+
+        <Box  
+          sx={{
+            padding: { xs: 2, sm: 5 },
+            maxWidth: '450px',
+            width: '100%',
+            height: 'auto',
+            boxShadow: '0px 0px 15px rgba(255, 255, 255, 0.4)',
+            backgroundColor: 'rgba(255, 255, 255, 1)',
+            backdropFilter: 'blur(10px)',
+            borderRadius: '20px',
+            overflow: 'auto',
+          }}>
+        
+
+          <StyledTextField
+            multiline
+            rows={6}
+            variant="outlined"
+            placeholder="いまどうしてる？"
+            value={newPost}
+            onChange={(e) => setnewPost(e.target.value)}
+            sx={{ width: '100%' }}
+          />
+
+          <Box display="flex" justifyContent="space-between">
+            <StyledButton
+              variant="outlined"
+              startIcon={<ArrowBackIcon />} // 戻るボタンにアイコンを追加
+              onClick={handleNavigateToTimeline}
+              sx={{
+                color: '#673ab7',
+                borderColor: '#673ab7',
+                outline: 'none', // フォーカス時の黒い枠を防ぐ
+                boxShadow: 'none', // フォーカス時の影を消す
+                '&:focus': {
+                  outline: 'none', // フォーカス時も黒い枠を防ぐ
+                  boxShadow: 'none', // フォーカス時の影を消す
+                  transform: 'none', // フォーカス時の拡大を防ぐ
+                },
+                '&:hover': {
+                  boxShadow: 'none', // ホバー時の影を無効化
+                  transform: 'none', // ホバー時の拡大を防ぐ
+                },
+              }}
+            >
+              タイムライン
+            </StyledButton>
+          
+            <StyledButton
+              variant="contained"
+              endIcon={<SendIcon />} // 投稿ボタンにアイコンを追加
+              onClick={handlePost}
+              disabled={!newPost}
+              sx={{
+                background: 'linear-gradient(45deg, #fe6b8b 30%, #ff8e53 90%)',
+                color: 'white',
+                outline: 'none', // フォーカス時の黒い枠を防ぐ
+                boxShadow: 'none', // フォーカス時の影を消す
+                '&:focus': {
+                  outline: 'none', // フォーカス時も黒い枠を防ぐ
+                  boxShadow: 'none', // フォーカス時の影を消す
+                  transform: 'none', // フォーカス時の拡大を防ぐ
+                },
+                '&:hover': {
+                  transform: 'none', // ホバー時の拡大を防ぐ
+                },
+                '&:disabled': {
+                  background: 'linear-gradient(45deg, #fe6b8b 30%, #ff8e53 90%)', // 無効時の背景色をグラデーションのまま薄くする
+                  color: 'rgba(255, 255, 255, 0.5)', // 無効時のテキスト色を薄くする
+                  opacity: 0.6, // 全体の透明度を設定
+                },
+              }}
+            >
+              投稿
+            </StyledButton>      
+          </Box>
+        </Box>
+      </Box>
+
 
 
     </div>

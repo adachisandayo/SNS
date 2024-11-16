@@ -10,8 +10,9 @@ import {
 import axios from "axios";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Post, User } from "../types/index";
+import { Posts, User } from "../types/index";
 import TimelineElement from "./TimelineElement"; // コンポーネントのインポート
+import Post from "./Post"; // Postコンポーネントをインポート
 
 
 
@@ -22,7 +23,7 @@ const api = axios.create({
 
 
 function App() {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<Posts[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const navigate = useNavigate();
@@ -30,9 +31,6 @@ function App() {
 
   // ユーザ名を取得
   const user_tag = searchParams.get("name");
-  if (!user_tag) {
-    navigate("/");
-  }
 
   // 投稿ページへ遷移
   const handleNavigateToPost = () => {
@@ -73,18 +71,24 @@ function App() {
 
 
   // タイムラインを取得
-  const fetchPosts = async () => {
-    try {
-      const response = await api.get(`/api/timeline/${user_tag}`);
-      setPosts(response.data);
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-    }
+  const fetchPosts = () => {
+    api.get(`/api/timeline/${user_tag}`)
+      .then((response) => {
+        setPosts(response.data);
+        console.log(response.data);
+      })
+      .catch ((error) => {
+        console.error("Error fetching posts:", error);
+      });
   };
 
   useEffect(() => {
-    fetchPosts();
-  }, []);
+    if (!user_tag) {
+      navigate("/");
+    } else {
+      fetchPosts();
+    }
+  }, [user_tag, navigate]);
 
   //リアクションがクリックされたときの処理
   const handleLike = () => {
@@ -117,7 +121,7 @@ function App() {
           <button onClick={handleLike}>いいね</button>
         </div>
       ))} */}
-
+      
       {posts.map((post) => (
         <TimelineElement
           key={post.id}
@@ -126,7 +130,29 @@ function App() {
         />
       ))}
 
-      <button onClick={handleNavigateToPost}>投稿</button>
+<Button
+          variant="contained"
+          color="primary"
+          onClick={handleNavigateToPost}
+          sx={{
+            background: 'linear-gradient(135deg, #6C63FF 0%, #48A9FE 100%)',
+            color: '#FFFFFF',
+            fontWeight: 'bold',
+            borderRadius: '24px',
+            padding: '10px 24px',
+            boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.15)',
+            outline: 'none', // 黒い枠を防ぐ
+            '&:focus': {
+              outline: 'none', // フォーカス時も黒い枠を防ぐ
+            },
+            '&:hover': {
+              background: 'linear-gradient(135deg, #5A55E0 0%, #3C99DC 100%)',
+              boxShadow: '0px 6px 16px rgba(0, 0, 0, 0.2)',
+            },
+          }}
+        >
+          投稿する
+        </Button>
       <button onClick={() => handleNavigateToUser(user_tag)}>マイページ</button>
     </>
 
