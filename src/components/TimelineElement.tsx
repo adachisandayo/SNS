@@ -1,10 +1,6 @@
 import React, { useEffect } from 'react';
 import { Box, Typography, IconButton, Tooltip } from '@mui/material';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import DeleteIcon from '@mui/icons-material/Delete';
 import useInView from '../hooks/useInView'; // カスタムフックをインポート
 
 const formatDateTime = (dateTimeString: string) => {

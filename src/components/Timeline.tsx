@@ -73,13 +73,21 @@ function App() {
   // タイムラインを取得
   const fetchPosts = () => {
     api.get(`/api/timeline/${user_tag}`)
-      .then((response) => {
-        setPosts(response.data);
-        console.log(response.data);
-      })
-      .catch ((error) => {
-        console.error("Error fetching posts:", error);
-      });
+    .then((response) => {
+      // response.dataの"id"を基準に重複を排除
+      const uniquePosts = response.data.reduce((acc, current) => {
+        if (!acc.some(post => post.id === current.id)) {
+          acc.push(current);
+        }
+        return acc;
+      }, []);
+
+      setPosts(uniquePosts);
+      console.log(uniquePosts);
+    })
+    .catch((error) => {
+      console.error("Error fetching posts:", error);
+    });
   };
 
   useEffect(() => {
