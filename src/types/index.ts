@@ -4,6 +4,8 @@ export type Posts = {
     user_id: number;
     post_datetime: string;
     user_tag: string;
+    user_name: string;
+    reaction_count: number;
 }
 
 export type User = {

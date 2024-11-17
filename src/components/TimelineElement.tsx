@@ -20,18 +20,22 @@ type Post = {
   user_id: number;
   post_datetime: string;
   user_tag: string;
+  user_name: string;
+  reaction_count: number;
 };
 
 interface TimelineElementProps {
   post: Post;
   error?: string | null;
   onLike?: (id: number) => void;
+  onUserPage?: (user_tag: string) => void;
 }
 
 const TimelineElement: React.FC<TimelineElementProps> = ({
   post,
   error,
   onLike,
+  onUserPage,
 }) => {
   const { ref, isInView } = useInView(); // カスタムフックを使用
  
@@ -65,7 +69,10 @@ const TimelineElement: React.FC<TimelineElementProps> = ({
     >
       {/* タイトルと投稿日を同じ行に配置 */}
       <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Typography variant="h6">
+        <Typography 
+          variant="h6"
+          onClick={() => onUserPage?.(post.user_tag)}
+        >
           {post.user_tag} <span style={{ fontSize: '0.75em' }}></span>
         </Typography>
         <Box display="flex" alignItems="center">
@@ -97,9 +104,9 @@ const TimelineElement: React.FC<TimelineElementProps> = ({
             }}
           >
             <ThumbUpAltIcon fontSize="small" />
-            {/* <Typography variant="caption" ml={0.5}>
-              {post.reactions.like}
-            </Typography> */}
+            <Typography variant="caption" ml={0.5}>
+              {post.reaction_count}
+            </Typography>
           </IconButton>
         </Tooltip>
         

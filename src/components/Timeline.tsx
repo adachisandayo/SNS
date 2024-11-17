@@ -32,8 +32,8 @@ function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [reloadCount, setReloadCount] = useState(0);
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   // 投稿画面のポップアウト用
   const [open, setOpen] = useState<boolean>(false);
   const handleOpen = () => setOpen(true);
@@ -74,7 +74,7 @@ function App() {
 
     const delayDebounceFn = setTimeout(() => {
       fetchFilteredUsers(searchTerm);
-    }, 500); //0.5秒後にAPI呼び出し
+    }, 300); //0.5秒後にAPI呼び出し
 
     return () => clearTimeout(delayDebounceFn);
   }, [searchTerm, fetchFilteredUsers]);
@@ -116,27 +116,27 @@ function App() {
   };
 
   //リアクションがクリックされたときの処理
-  const handleLike = () => {
-    console.log("いいね！");
+  const handleLike = (post_id: number) => {
+
   };
 
   return (
     <>
-      {/* <input
-        type="text"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        placeholder='ユーザを検索'
-      />
-
-
-      {filteredUsers.map((user) => (
-        <div key={user.id}>
-          <div onClick={() => handleNavigateToUser(user.user_tag)}>{user.user_tag}</div>
-        </div>
-      ))} */}
-
-      <Box sx={{ mb: 2, position: 'relative' }}>
+      <Typography
+        variant="h1"
+        sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}
+      >
+        タイムライン
+      </Typography>
+      
+      {/* 検索ボックスと検索候補 */}
+      <Box 
+        sx={{ 
+          padding: { xs: 1, sm: 1 },
+          mb: 1, 
+          position: 'relative' 
+        }}
+      >
           <TextField
             type="text"
             value={searchTerm}
@@ -180,12 +180,13 @@ function App() {
           )}
         </Box>
 
-      
+      {/* タイムライン */}
       {posts.map((post) => (
         <TimelineElement
           key={post.id}
           post={post}
-          onLike={handleLike}
+          onLike={handleLike(post.id)}
+          onUserPage={() => handleNavigateToUser(post.user_tag)}
         />
       ))}
 
@@ -315,7 +316,14 @@ function App() {
           更新
         </Button>        
       </Box>
-      <button onClick={() => handleNavigateToUser(user_tag)}>マイページ</button>
+
+      <Box  
+        sx={{
+          width: '100%',
+          height: '70px',
+          backgroundColor: 'transparent',
+        }}>
+      </Box>
     </>
 
   );

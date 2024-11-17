@@ -13,10 +13,10 @@ def get_items(usertag):
     userid = get_user_id(usertag, cur) 
 
     query_for_fetching = (
-        "SELECT p.*, u.user_tag, u.user_name "
+        "SELECT p.*, u.user_tag, u.user_name, COUNT(pr.user_id) AS reaction_count "
         "FROM POSTS p "
         "JOIN USERS u ON p.user_id = u.id "
-        "LEFT JOIN FOLLOWS f ON f.src_id = u.id "
+        "LEFT JOIN POST_REACTIONS pr ON p.id = pr.post_id "
         "WHERE u.id = %s "
         "OR u.id IN ("
             "SELECT f.dst_id "
@@ -24,6 +24,7 @@ def get_items(usertag):
             "JOIN FOLLOWS f ON u2.id = f.src_id "
             "WHERE u2.id = %s"
         ") "
+        "GROUP BY p.id "
         "ORDER BY p.post_datetime DESC;"
     )
 
@@ -41,7 +42,8 @@ def get_items(usertag):
             "user_id":row["user_id"],
             "post_datetime":row["post_datetime"],
             "user_tag":row["user_tag"],
-            "user_name":row["user_name"]
+            "user_name":row["user_name"], 
+            "reaction_count":row["reaction_count"]
         })
     # print(return_dict)
     return return_dict
