@@ -79,11 +79,16 @@ function App() {
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
-      
   }
 
+  //リアクションがクリックされたときの処理
+  const handleLike = () => {
+    console.log("いいね！");
+  };
+
   return (
-    <div>
+    <>
+      <h1>{dst_tag}</h1>
       {src_tag !== dst_tag && (
         <button onClick={handleFollow}>{following}</button>
       )}
@@ -99,12 +104,12 @@ function App() {
         <TimelineElement
           key={post.id}
           post={post}
-          // onLike={handleLike}
+          onLike={handleLike}
         />
       ))}
       <button onClick={handleNavigateToPost}>投稿</button>
       <button onClick={handleNavigateToTimeline}>タイムライン</button>
-    </div>
+    </>
   )
 }
 

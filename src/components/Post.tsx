@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import axios from "axios";
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
@@ -16,6 +16,11 @@ import {
 import { styled } from '@mui/system';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // 戻るアイコンのインポート
 import SendIcon from '@mui/icons-material/Send'; // 投稿アイコンのインポート
+
+interface PostProps {
+  onClose: () => void;
+  handleUpdatePage: () => void;
+}
 
 
 const api = axios.create({
@@ -41,10 +46,12 @@ const StyledButton = styled(Button)(({ theme }) => ({
 }));
 
 
-function App() {
+const App: React.FC<PostProps> = ({ onClose, handleUpdatePage }) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [newPost, setnewPost] = useState("");
+  const boxRef = useRef<HTMLDivElement>(null);
+
 
   const user_tag = searchParams.get("name");
   if (!user_tag) {
@@ -55,21 +62,36 @@ function App() {
     navigate(`/timeline/?name=${user_tag}`)
   }
 
+  // ボックス外をクリックした場合に閉じる
   useEffect(() => {
-  },[])
+    const handleClickOutside = (event: MouseEvent) => {
+      if (boxRef.current && !boxRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
 
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [onClose]);
+
+
+
+
+  // 投稿する
   const handlePost = () => {
-
     const data = {
       message: newPost,
     };
-
     api.post(`/api/posts/${user_tag}`, data)
       .then((response) => {
         console.log("Post successful:", response);
         if (response.status === 200) {
           alert('投稿しました。');
-          handleNavigateToTimeline();
+          onClose();
+          handleUpdatePage();
         } 
       })
       .catch((error) => {
@@ -79,102 +101,96 @@ function App() {
   };
 
 
-      <button onClick={handleNavigateToTimeline}>タイムライン</button>
-
 
   return (
-    <div>
-      <Box
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+      }}
+    >
+
+      <Box  
+        ref={boxRef}
         sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100vh',
-        }}
-      >
+          padding: { xs: 2, sm: 5 },
+          maxWidth: '450px',
+          width: '100%',
+          height: 'auto',
+          boxShadow: '0px 0px 15px rgba(255, 255, 255, 0.4)',
+          backgroundColor: 'rgba(255, 255, 255, 1)',
+          backdropFilter: 'blur(10px)',
+          borderRadius: '20px',
+          overflow: 'auto',
+        }}>
+      
 
-        <Box  
-          sx={{
-            padding: { xs: 2, sm: 5 },
-            maxWidth: '450px',
-            width: '100%',
-            height: 'auto',
-            boxShadow: '0px 0px 15px rgba(255, 255, 255, 0.4)',
-            backgroundColor: 'rgba(255, 255, 255, 1)',
-            backdropFilter: 'blur(10px)',
-            borderRadius: '20px',
-            overflow: 'auto',
-          }}>
-        
+        <StyledTextField
+          multiline
+          rows={6}
+          variant="outlined"
+          placeholder="いまどうしてる？"
+          value={newPost}
+          onChange={(e) => setnewPost(e.target.value)}
+          sx={{ width: '100%' }}
+        />
 
-          <StyledTextField
-            multiline
-            rows={6}
+        <Box display="flex" justifyContent="space-between">
+          <StyledButton
             variant="outlined"
-            placeholder="いまどうしてる？"
-            value={newPost}
-            onChange={(e) => setnewPost(e.target.value)}
-            sx={{ width: '100%' }}
-          />
-
-          <Box display="flex" justifyContent="space-between">
-            <StyledButton
-              variant="outlined"
-              startIcon={<ArrowBackIcon />} // 戻るボタンにアイコンを追加
-              onClick={handleNavigateToTimeline}
-              sx={{
-                color: '#673ab7',
-                borderColor: '#673ab7',
-                outline: 'none', // フォーカス時の黒い枠を防ぐ
+            startIcon={<ArrowBackIcon />} // 戻るボタンにアイコンを追加
+            onClick={onClose}
+            sx={{
+              color: '#673ab7',
+              borderColor: '#673ab7',
+              outline: 'none', // フォーカス時の黒い枠を防ぐ
+              boxShadow: 'none', // フォーカス時の影を消す
+              '&:focus': {
+                outline: 'none', // フォーカス時も黒い枠を防ぐ
                 boxShadow: 'none', // フォーカス時の影を消す
-                '&:focus': {
-                  outline: 'none', // フォーカス時も黒い枠を防ぐ
-                  boxShadow: 'none', // フォーカス時の影を消す
-                  transform: 'none', // フォーカス時の拡大を防ぐ
-                },
-                '&:hover': {
-                  boxShadow: 'none', // ホバー時の影を無効化
-                  transform: 'none', // ホバー時の拡大を防ぐ
-                },
-              }}
-            >
-              タイムライン
-            </StyledButton>
-          
-            <StyledButton
-              variant="contained"
-              endIcon={<SendIcon />} // 投稿ボタンにアイコンを追加
-              onClick={handlePost}
-              disabled={!newPost}
-              sx={{
-                background: 'linear-gradient(45deg, #fe6b8b 30%, #ff8e53 90%)',
-                color: 'white',
-                outline: 'none', // フォーカス時の黒い枠を防ぐ
+                transform: 'none', // フォーカス時の拡大を防ぐ
+              },
+              '&:hover': {
+                boxShadow: 'none', // ホバー時の影を無効化
+                transform: 'none', // ホバー時の拡大を防ぐ
+              },
+            }}
+          >
+            戻る
+          </StyledButton>
+        
+          <StyledButton
+            variant="contained"
+            endIcon={<SendIcon />} // 投稿ボタンにアイコンを追加
+            onClick={handlePost}
+            disabled={!newPost}
+            sx={{
+              background: 'linear-gradient(45deg, #fe6b8b 30%, #ff8e53 90%)',
+              color: 'white',
+              outline: 'none', // フォーカス時の黒い枠を防ぐ
+              boxShadow: 'none', // フォーカス時の影を消す
+              '&:focus': {
+                outline: 'none', // フォーカス時も黒い枠を防ぐ
                 boxShadow: 'none', // フォーカス時の影を消す
-                '&:focus': {
-                  outline: 'none', // フォーカス時も黒い枠を防ぐ
-                  boxShadow: 'none', // フォーカス時の影を消す
-                  transform: 'none', // フォーカス時の拡大を防ぐ
-                },
-                '&:hover': {
-                  transform: 'none', // ホバー時の拡大を防ぐ
-                },
-                '&:disabled': {
-                  background: 'linear-gradient(45deg, #fe6b8b 30%, #ff8e53 90%)', // 無効時の背景色をグラデーションのまま薄くする
-                  color: 'rgba(255, 255, 255, 0.5)', // 無効時のテキスト色を薄くする
-                  opacity: 0.6, // 全体の透明度を設定
-                },
-              }}
-            >
-              投稿
-            </StyledButton>      
-          </Box>
+                transform: 'none', // フォーカス時の拡大を防ぐ
+              },
+              '&:hover': {
+                transform: 'none', // ホバー時の拡大を防ぐ
+              },
+              '&:disabled': {
+                background: 'linear-gradient(45deg, #fe6b8b 30%, #ff8e53 90%)', // 無効時の背景色をグラデーションのまま薄くする
+                color: 'rgba(255, 255, 255, 0.5)', // 無効時のテキスト色を薄くする
+                opacity: 0.6, // 全体の透明度を設定
+              },
+            }}
+          >
+            投稿
+          </StyledButton>      
         </Box>
       </Box>
-
-
-
-    </div>
+    </Box>
     
   )
 }

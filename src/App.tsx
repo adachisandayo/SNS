@@ -15,6 +15,8 @@ const theme = createTheme({
   },
 });
 
+const handleClose = () => {};
+const handleUpdatePage = () => {};
 
 function App() {
   return (
@@ -24,8 +26,8 @@ function App() {
             <Route path='/' element={<Login />} />
             <Route path='/timeline' element={<TimeLine />} />
             <Route path='/users' element={<Users />} />
-            <Route path='/post' element={<Post />} />
-        </Routes>
+            <Route path="/post" element={<Post onClose={handleClose} handleUpdatePage={handleUpdatePage}/>} />
+          </Routes>
       </BrowserRouter>
     </ThemeProvider>
   );
