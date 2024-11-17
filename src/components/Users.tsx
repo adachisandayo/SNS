@@ -27,14 +27,15 @@ const api = axios.create({
 
 function App() {
   const [posts, setPosts] = useState<Posts[]>([]);
-  const [following, setFollowing]= useState("");
+  const [follows, setFollows]= useState("");
+  const [isFollow, setIsFollow]= useState(false);
   const [reloadCount, setReloadCount] = useState(0);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-    // 投稿画面のポップアウト用
-    const [open, setOpen] = useState<boolean>(false);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+  // 投稿画面のポップアウト用
+  const [open, setOpen] = useState<boolean>(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   // ユーザ名を取得
   const src_tag = searchParams.get("name");
@@ -52,24 +53,26 @@ function App() {
 
   // ユーザをフォローするときに呼び出す関数
   const handleFollow = () => {
-    if (following == "フォロー") {
+    if (!isFollow) {
       api.post(`/api/follows/${src_tag}/${dst_tag}`)
       .then((response) => {
         console.log("Post successful:", response);
         if (response.status === 200) {
-          setFollowing("フォロー中")
+          setFollows("フォロー中");
+          setIsFollow(true);
         } 
       })
       .catch((error) => {
         console.error("Error:", error);
         alert("フォローに失敗しました。もう一度お試しください。");
       });
-    } else if (following == "フォロー中") {
+    } else{
       api.delete(`/api/follows/${src_tag}/${dst_tag}`)
       .then((response) => {
         console.log("Post successful:", response);
         if (response.status === 200) {
-          setFollowing("フォロー")
+          setFollows("フォロー")
+          setIsFollow(false)
         } 
       })
       .catch((error) => {
@@ -109,32 +112,135 @@ function App() {
 
       setPosts(updatedPosts);
       if (follow) {
-        setFollowing("フォロー中")
+        setFollows("フォロー中");
       } else {
-        setFollowing("フォロー")
+        setFollows("フォロー");
       }
+      setIsFollow(follow);
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
   }
 
-    // ページ更新時の処理
-    const handleUpdatePage = () => {
-      //window.location.reload();
-      setReloadCount(reloadCount + 1);
-    };
+  // ページ更新時の処理
+  const handleUpdatePage = () => {
+    //window.location.reload();
+    setReloadCount(reloadCount + 1);
+  };
 
   //リアクションがクリックされたときの処理
-  const handleLike = () => {
-    console.log("いいね！");
+  const handleLike = (post: Posts) => {
+    console.log(post)
+    if (!post.user_reacted){
+      api.post(`/api/reactions/${src_tag}/${post.id}`)
+      .then((response) => {
+        console.log("Post successful:", response);
+        if (response.status === 200) {
+          // `user_reacted` を True に更新
+          setPosts((prevPosts) =>
+            prevPosts.map((p) =>
+              p.id === post.id 
+                ? { 
+                  ...p, 
+                  reaction_count: post.reaction_count+1, 
+                  user_reacted: true 
+                } : p
+            )
+          );
+        } 
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    } else {
+      api.delete(`/api/reactions/${src_tag}/${post.id}`)
+      .then((response) => {
+        console.log("Post successful:", response);
+        if (response.status === 200) {
+          // `user_reacted` を False に更新
+          setPosts((prevPosts) =>
+            prevPosts.map((p) =>
+              p.id === post.id 
+                ? { 
+                  ...p, 
+                  reaction_count: post.reaction_count-1, 
+                  user_reacted: false 
+                } : p
+            )
+          );            
+        } 
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    }
   };
 
   return (
     <>
-      <h1>{dst_tag}のマイページ</h1>
-      {src_tag !== dst_tag && (
-        <button onClick={handleFollow}>{following}</button>
+      <Box
+        mb={2}
+        sx={{
+          display: 'flex', // Flexboxを有効化
+          backgroundColor: "rgba(255, 255, 255, 0.9)",
+          flexDirection: { xs: 'column', sm: 'row' }, // 小さい画面では縦、大きい画面では横
+          alignItems: 'center', // コンテンツの垂直方向の揃え
+          justifyContent: { xs: 'center', sm: 'space-between' }, // 縦並び時は中央寄せ、横並び時はスペースを空ける
+          gap: 2, // コンテンツ間の余白
+          padding: 2, // 全体の余白
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // 柔らかい影
+          borderRadius: '0 0 5px 5px', // 上の角を丸くしない
+        }}
+      >    
+        <Typography
+          sx={{
+            fontSize: 30, 
+            fontFamily: 'inherit',
+            fontWeight: 550,
+            width: '70%',
+            height: '100%',
+            color: '#9966FF' ,
+            textAlign: 'center'
+           }}
+        >
+          {dst_tag}のマイページ
+        </Typography>
+
+        {/* フォローボタン */}
+        {src_tag !== dst_tag && (
+        <Button
+            // variant="contained"
+            onClick={handleFollow}
+            sx={{
+              background: isFollow
+              ? '#9966FF'
+              : 'tramsparent' ,
+              color: isFollow ? '#FFFFFF' : '#9966FF', 
+              fontWeight: 'bold',
+              borderRadius: '24px',
+              padding: '10px 24px',
+              boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.15)',
+              border: '1px solid #9966FF', 
+              outline: 'none', // 黒い枠を防ぐ
+              '&:focus': {
+                outline: 'none', // フォーカス時も黒い枠を防ぐ
+              },
+              '&:hover': {
+                background: isFollow
+                ? '#9966FF'
+                : 'tramsparent',
+                boxShadow: '0px 6px 16px rgba(0, 0, 0, 0.2)',
+              },
+            }}
+          >
+            {follows}
+        </Button>        
       )}
+      </Box>     
+
+      
+
+      {/* タイムライン */}
       {posts.map((post) => (
         <TimelineElement
           key={post.id}

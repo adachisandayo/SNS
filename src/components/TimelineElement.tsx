@@ -22,12 +22,13 @@ type Post = {
   user_tag: string;
   user_name: string;
   reaction_count: number;
+  user_reacted: boolean;
 };
 
 interface TimelineElementProps {
   post: Post;
   error?: string | null;
-  onLike?: (id: number) => void;
+  onLike?: (post: Post) => void;
   onUserPage?: (user_tag: string) => void;
 }
 
@@ -54,7 +55,7 @@ const TimelineElement: React.FC<TimelineElementProps> = ({
   return (
     <Box
       ref={ref}
-      mb={3}
+      mb={2}
       p={2}
       borderRadius={2}
       bgcolor="rgba(255, 255, 255, 0.7)"
@@ -89,8 +90,8 @@ const TimelineElement: React.FC<TimelineElementProps> = ({
         {/* リアクションアイコンボタン */}
         <Tooltip title="いいね">
           <IconButton
-            color="primary"
-            onClick={() => onLike?.(post.id)}
+            color={post.user_reacted ? "primary" : "default"} // Trueの場合に"secondary"色を使用
+            onClick={() => onLike?.(post)}
             disabled={!onLike}
             size="small"
             sx={{

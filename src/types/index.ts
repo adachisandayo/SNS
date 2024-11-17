@@ -6,6 +6,7 @@ export type Posts = {
     user_tag: string;
     user_name: string;
     reaction_count: number;
+    user_reacted: boolean;
 }
 
 export type User = {

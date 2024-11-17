@@ -10,10 +10,8 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
-  CircularProgress,
 } from "@mui/material";
 import axios from "axios";
-import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Posts, User } from "../types/index";
 import TimelineElement from "./TimelineElement"; // コンポーネントのインポート
@@ -116,76 +114,143 @@ function App() {
   };
 
   //リアクションがクリックされたときの処理
-  const handleLike = (post_id: number) => {
-
+  const handleLike = (post: Posts) => {
+      if (!post.user_reacted){
+        api.post(`/api/reactions/${user_tag}/${post.id}`)
+        .then((response) => {
+          console.log("Post successful:", response);
+          if (response.status === 200) {
+            // `user_reacted` を True に更新
+            setPosts((prevPosts) =>
+              prevPosts.map((p) =>
+                p.id === post.id 
+                  ? { 
+                    ...p, 
+                    reaction_count: post.reaction_count+1, 
+                    user_reacted: true 
+                  } : p
+              )
+            );
+          } 
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+      } else {
+        api.delete(`/api/reactions/${user_tag}/${post.id}`)
+        .then((response) => {
+          console.log("Post successful:", response);
+          if (response.status === 200) {
+            // `user_reacted` を False に更新
+            setPosts((prevPosts) =>
+              prevPosts.map((p) =>
+                p.id === post.id 
+                  ? { 
+                    ...p, 
+                    reaction_count: post.reaction_count-1, 
+                    user_reacted: false 
+                  } : p
+              )
+            );            
+          } 
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+      }
   };
+
 
   return (
     <>
-      <Typography
-        variant="h1"
-        sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}
-      >
-        タイムライン
-      </Typography>
-      
-      {/* 検索ボックスと検索候補 */}
-      <Box 
-        sx={{ 
-          padding: { xs: 1, sm: 1 },
-          mb: 1, 
-          position: 'relative' 
+      <Box
+        mb={2}
+        sx={{
+          display: 'flex', // Flexboxを有効化
+          backgroundColor: "rgba(255, 255, 255, 0.9)",
+          flexDirection: { xs: 'column', sm: 'row' }, // 小さい画面では縦、大きい画面では横
+          alignItems: 'center', // コンテンツの垂直方向の揃え
+          justifyContent: { xs: 'center', sm: 'space-between' }, // 縦並び時は中央寄せ、横並び時はスペースを空ける
+          gap: 2, // コンテンツ間の余白
+          padding: 2, // 全体の余白
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // 柔らかい影
+          borderRadius: '0 0 5px 5px', // 上の角を丸くしない
         }}
-      >
-          <TextField
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="ユーザを検索"
-            fullWidth
-            sx={{
-              // position: 'absolute',
-              zIndex: 1,
-              width: '50%',
-              backgroundColor: '#f5f5f5',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              padding: 0,
-            }}
-          />
-          {filteredUsers.length > 0 && (
-            <List
+      >    
+        <Typography
+          sx={{
+            fontSize: 35, 
+            fontFamily: 'inherit',
+            fontWeight: 550,
+            width: '40%',
+            height: '100%',
+            color: '#9966FF' ,
+            paddingLeft: { sm: 4, xs: 0 }, // 横並び時に左側にスペースを空ける
+            textAlign: { xs: 'center', sm: 'left' }, // 小さい画面では中央揃え、大きい画面では左揃え
+           }}
+        >
+          タイムライン
+        </Typography>
+        
+        {/* 検索ボックスと検索候補 */}
+        <Box 
+          sx={{ 
+            padding: { xs: 1, sm: 1 },
+            mb: 1, 
+            position: 'relative' 
+          }}
+        >
+            <TextField
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="ユーザを検索"
+              fullWidth
               sx={{
-                position: 'absolute',
+                // position: 'absolute',
                 zIndex: 1,
-                width: '50%',
-                backgroundColor: '#f5f5f5',
+                width: '100%',
+                backgroundColor: '#fcfcfc',
                 border: '1px solid #ccc',
                 borderRadius: '4px',
                 padding: 0,
               }}
-            >
-              {filteredUsers.map((user) => (
-                <ListItem
-                  key={user.id}
-                  disablePadding
-                  sx={{ border: '1px solid #ccc', marginBottom: '0px', borderRadius: '2px' }}
-                >
-                  <ListItemButton onClick={() => handleNavigateToUser(user.user_tag)}>
-                    <ListItemText primary={user.user_tag} />
-                  </ListItemButton>
-                </ListItem>
-              ))}
-            </List>
-          )}
+            />
+            {filteredUsers.length > 0 && (
+              <List
+                sx={{
+                  position: 'absolute',
+                  zIndex: 1,
+                  width: '100%',
+                  backgroundColor: '#f5f5f5',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px',
+                  padding: 0,
+                }}
+              >
+                {filteredUsers.map((user) => (
+                  <ListItem
+                    key={user.id}
+                    disablePadding
+                    sx={{ border: '1px solid #ccc', marginBottom: '0px', borderRadius: '4px' }}
+                  >
+                    <ListItemButton onClick={() => handleNavigateToUser(user.user_tag)}>
+                      <ListItemText primary={user.user_tag} />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+              </List>
+            )}
+          </Box>
         </Box>
+
 
       {/* タイムライン */}
       {posts.map((post) => (
         <TimelineElement
           key={post.id}
           post={post}
-          onLike={handleLike(post.id)}
+          onLike={() => handleLike(post)}
           onUserPage={() => handleNavigateToUser(post.user_tag)}
         />
       ))}

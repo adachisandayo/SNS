@@ -79,7 +79,22 @@ function App() {
         borderRadius: 2,
       }}
     >
-        <h1>ログインページ</h1>
+
+        <Typography
+          sx={{
+            fontSize: 35, 
+            fontFamily: 'inherit',
+            fontWeight: 550,
+            width: '100%',
+            height: '100%',
+            paddingLeft: 4, 
+            textAlign: 'left', 
+            marginBottom:3
+           }}
+        >
+          SNSにログイン
+
+        </Typography>
           <TextField
             label="ユーザー名"
             variant="outlined"

@@ -125,7 +125,15 @@ const App: React.FC<PostProps> = ({ onClose, handleUpdatePage }) => {
           borderRadius: '20px',
           overflow: 'auto',
         }}>
-      
+        
+        <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
+          <Typography
+            variant="h4"
+            sx={{ fontSize: { xs: '1.5rem', sm: '1.5rem' } }}
+          >
+            投稿する
+          </Typography>
+        </Stack>
 
         <StyledTextField
           multiline
